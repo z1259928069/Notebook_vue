@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        {{ msg }}
+        username: <input type="text" v-model="username" name="" id=""><br>
+        password: <input type="text" v-model="pwd" name="" id=""><br>
+        nickname: <input type="text" v-model="nickname" name="" id=""><br>
+        sex: <input type="radio" name="sex" value="male" v-model="sex" checked>男<br>
+        <input type="radio" value ="female" name="sex" v-model="sex">女<br>
+        
+            class: <select v-model.number="classNumber"  >
+            <option value="1班">1</option>
+            <option value="2班">2</option>
+            <option value="3班">3</option>
+            <option value="4班">4</option>
+
+        </select> <br>
+        <textarea v-model="info" id="" cols="30" rows="10"></textarea>
+
+
+    </div>
+    <script src="./vue3.js"></script>
+    <script>
+        const root = {
+            data() {
+                return {
+                    msg: '',
+                    username: '',
+                    pwd: '',
+                    nickname: '',
+                    sex:'',
+                    classNumber:'',
+                     
+
+                }
+            },
+            methods: {
+                
+            },
+            computed: {
+                info(){
+                    return " msg: "+this.msg+" username: "+this.username+"pwd: "+this.pwd+"nickname: "+this.nickname+"sex: "+this.sex+" classNumber: "+this.classNumber
+                    // return JSON.stringify(this.$data)
+                }
+            }
+        }
+        const app = Vue.createApp(root)
+        const vm = app.mount("#app")
+    </script>
+</body>
+
+</html>

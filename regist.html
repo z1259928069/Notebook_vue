@@ -36,7 +36,7 @@
 
         .loginBox {
             width: 400px;
-            height: 364px;
+            height: 450px;
             background-color: #0c1622;
             margin: 100px auto;
             border-radius: 10px;
@@ -182,29 +182,28 @@
                 <input type="text" v-model="username" id="username" required>
                 <label for="">userName</label>
             </div>
+             
+            
+            <div class="item">
+                <input type="text"   id="name" required>
+                <label for="">name(不允许重复)</label>
+            </div>
             <div class="item">
                 <input type="password" id="pwd" required>
                 <label for="">password</label>
             </div>
-            <button class="btn" id="Login" style="float: left;">登陆
+
+            <button class="btn" id="Regist" style="float: left;">注册
                 <span></span>
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
              
+             
             <button class=" btn">
-                <a href="./regist.html">
-                    注册
-                </a>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <button class=" btn">
-                <a href="./readme.html" target="_blank">
-                    readme.html
+                <a href="./index.html"  >
+                    返回
                 </a>
                 <span></span>
                 <span></span>
@@ -214,71 +213,79 @@
          
     </div>
     <script>
-        window.onload = function () {
-            //网页加载完毕就运行的
-            //注册
-            // let btnRegist = document.querySelector("#Regist")
-            let btnLogin = document.querySelector("#Login")
-            // btnRegist.addEventListener('click', registUser)
-            btnLogin.addEventListener('click', LoginUser)
-            function checkName(usname, data) {
-                console.log("开始查询用户名")
-                flag = 0
-                for (var i = 0, l = data.length; i < l; i++) {
-                    {
-                        // console.log(data[i].name)//遍历用data[i][key]， 取值用data[i].name
-                        if (data[i].id == usname) {
-                            flag = data[i].name;
-                            break;
-                        }
+
+        let btnRegist = document.querySelector("#Regist")
+        btnRegist.addEventListener('click', registUser)
+        function registUser() {
+            console.log("开始注册")
+            let registerName = document.querySelector("#name").value
+            let username = document.querySelector("#username").value
+            let password = document.querySelector("#pwd").value
+            // console.log(name,password)
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            const data = { tasks: this.tasks }
+            let raw = JSON.stringify(data);
+            // phoneNumber=request.phoneNumber;
+            // 假如名字重复，拒绝访问
+            let requestOptions = { // 里面不能有body
+                method: "GET",
+                headers: myHeaders,
+                redirect: "follow",
+            }
+            fetch(`https://db-api.amarea.cn/users`, requestOptions)
+                .then(response => response.json())
+                .then(data => {
+                    // console.log(data)
+                    //是一个对象(json格式)
+                    // 判断name是否重复1
+                    let flag = checkName(registerName, data)
+                    console.log(registerName)
+                    if (flag==true) 
+                    {alert("该用户名存在，重新输入")}
+                    if (flag == false) {
+                        register(registerName, username, password)
+                        alert("注册成功，即将跳转到登陆界面")
+                        setTimeout(() => {
+                            console.log("正在跳转");
+                        }, 100);
+                        window.location.href = "./index.html"
+
+                    }
+                })
+                .catch(error => { console.log(`error: ${error}`); });
+        }
+        function checkName(usname, data) {
+            console.log(data)
+            console.log("开始查询姓名"+usname)
+            let flag1 = false
+            for (var i = 0, l = data.length; i < l; i++) {
+                {
+                    // console.log(data[i].name)//遍历用data[i][key]， 取值用data[i].name
+                    if (data[i].name == usname) {
+                        console.log("查询到相同name用户")
+                        flag1 = true;
+                        break;
+                         
                     }
                 }
-                return flag
             }
-            function LoginUser() {
-                console.log("ok")
-                let loginUsername = document.querySelector("#username").value
-                let loginPwd = document.querySelector("#pwd").value
-                const myHeaders = new Headers()
-                myHeaders.append("Content-type", "application/json")
-                let requestOptions = {
-                    method: "GET",
-                    headers: myHeaders,
-                    redirect: "follow",
-                }
-                fetch(`https://db-api.amarea.cn/users`, requestOptions)
-                    .then(response => response.json())
-                    .then(data => {
-                        getName = checkName(loginUsername, data)
-                        if (getName) {
-                            let flag = checkLogin(data, loginUsername, loginPwd)
-                            if (flag) {
-                                
-                                alert("账号密码登陆成功!")
-                                window.location.href = "./loginSuccessfully.html?" + getName
-                                // "./loginSuccessfully.html?username="+loginName
-
-                            }
-                            else { alert("账号密码输入错误") }
-                        }
-                        else {
-                            console.log("未找到该用户")
-                            alert("该用户名不存在，先注册")
-                        }
-                    })
-                    .catch(err => console.log(err))
+            console.log("flag:" + flag1)
+            return flag1
+        }
+        function register(registerName, username, pwd) {
+            const myHeaders = new Headers()
+            myHeaders.append("Content-Type", "application/json")
+            let requestOptions = { // 里面不能有body
+                method: "POST",
+                headers: myHeaders,
+                redirect: "follow",
             }
-            function checkLogin(data, loginName, loginPwd) {
-                flag = false
-
-                for (let i = 0; i < data.length; i++) {
-                    if (data[i].id == loginName && data[i].password == loginPwd) {
-
-                        flag = true
-                    }
-                }
-                return flag
-            }
+            requestOptions.body = JSON.stringify({ name: registerName, id: username, password: pwd, });
+            fetch(`https://db-api.amarea.cn/users`, requestOptions)
+                .then(response => response.json())
+                .then(data => console.log(data.name))
+                .catch(err => console.log(err))
         }
     </script>
 </body>
